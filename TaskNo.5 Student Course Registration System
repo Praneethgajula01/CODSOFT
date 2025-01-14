@@ -1,0 +1,90 @@
+import java.util.*;
+class Course {
+    String code, title, description, schedule;
+    int capacity, enrolled;
+
+    Course(String code, String title, String description, String schedule, int capacity) {
+        this.code = code;
+        this.title = title;
+        this.description = description;
+        this.schedule = schedule;
+        this.capacity = capacity;
+        this.enrolled = 0;
+    }
+
+    boolean hasCapacity() {
+        return enrolled < capacity;
+    }
+    void enroll() {
+        if (hasCapacity()) enrolled++;
+    }
+    void remove() {
+        if (enrolled > 0) enrolled--;
+    }
+}
+
+class Student {
+    String studentId, name;
+    Set<Course> registeredCourses = new HashSet<>();
+    Student(String studentId, String name) {
+        this.studentId = studentId;
+        this.name = name;
+    }
+    void register(Course course) {
+        if (course.hasCapacity() && !registeredCourses.contains(course)) {
+            course.enroll();
+            registeredCourses.add(course);
+            System.out.println(name + " signed up for " + course.title);
+        } else {
+            System.out.println("Can't register for " + course.title);
+        }
+    }
+    void drop(Course course) {
+        if (registeredCourses.contains(course)) {
+            course.remove();
+            registeredCourses.remove(course);
+            System.out.println(name + " dropped " + course.title);
+        } else {
+            System.out.println("Not enrolled in " + course.title);
+        }
+    }
+}
+
+class CourseManager {
+    List<Course> courses = new ArrayList<>();
+    List<Student> students = new ArrayList<>();
+
+    void addCourse(Course course) {
+        courses.add(course);
+    }
+    void addStudent(Student student) {
+        students.add(student);
+    }
+    void showCourses() {
+        for (Course course : courses) {
+            System.out.println(course.title + " | Slots left: " + (course.capacity - course.enrolled));
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        CourseManager cm = new CourseManager();
+
+        Course cs101 = new Course("CS101", "Intro to Computer Science", "Learn the basics", "Mon, Wed 10-12", 30);
+        Course math101 = new Course("MATH101", "Calculus I", "Intro to calculus", "Tue, Thu 1-3", 25);
+        
+        cm.addCourse(cs101);
+        cm.addCourse(math101);
+        Student ramana = new Student("S001", "Ramana");
+        Student ananya = new Student("S002", "Ananya");
+        cm.addStudent(ramana);
+        cm.addStudent(ananya);
+        cm.showCourses();
+        ramana.register(cs101);
+        ananya.register(math101);
+        ramana.register(math101); 
+        ramana.drop(cs101);
+        cm.showCourses();
+    }
+}
