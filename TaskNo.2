@@ -42,14 +42,14 @@ public class GradeCalculator{
     }
 
     public static void main(String[] args){
-        try (Scanner scannr = new Scanner(System.in)) {
+        try (Scanner scanner = new Scanner(System.in)) {
             ArrayList<Double>marks=new ArrayList<>();
             System.out.print("Enter number of subjects:");
-            int numSubjects=scannr.nextInt();
+            int numSubjects=scanner.nextInt();
 
             for(int i=0;i<numSubjects;i++){
                 System.out.printf("Enter marks for subject %d:",i+1);
-                double mark=scannr.nextDouble();
+                double mark=scanner.nextDouble();
 
                 if(mark<0||mark>100){
                     System.out.println("Invalid marks! The marks should be between 0 and 100");
@@ -65,7 +65,7 @@ public class GradeCalculator{
             System.out.printf("Total Marks Scored: %.2f%d%n",result.totalMarks,numSubjects*100);
             System.out.printf("Average Percentage: %.2f%%%n",result.averagePercentage);
             System.out.printf("Grade:%c%n",result.grade);
-            scannr.close();
+            scanner.close();
         }
     }
 }
