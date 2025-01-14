@@ -1,0 +1,71 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+public class GradeCalculator{
+    static class ResultSummary{
+        double totalMarks;
+        double averagePercentage;
+        char grade;
+
+    public ResultSummary(double totalMarks, double averagePercentage, char grade){
+        this.totalMarks=totalMarks;
+        this.averagePercentage=averagePercentage;
+        this.grade=grade;
+    }
+    }
+
+    public static ResultSummary calculatedGrades(ArrayList<Double> marks){
+        double totalMarks=0;
+        for(Double mark:marks){
+            totalMarks+=mark;
+        }
+
+        double averagePercentage=totalMarks/marks.size();
+        char grade;
+
+        if(averagePercentage>=90){
+            grade='A';
+        }
+        else if(averagePercentage>=80){
+            grade='B';
+        }
+        else if(averagePercentage>=70){
+            grade='C';
+        }
+        else if(averagePercentage>=60){
+            grade='D';
+        }
+        else{
+            grade='F';
+        }
+
+        return new ResultSummary(totalMarks, averagePercentage, grade);
+    }
+
+    public static void main(String[] args){
+        try (Scanner scannr = new Scanner(System.in)) {
+            ArrayList<Double>marks=new ArrayList<>();
+            System.out.print("Enter number of subjects:");
+            int numSubjects=scannr.nextInt();
+
+            for(int i=0;i<numSubjects;i++){
+                System.out.printf("Enter marks for subject %d:",i+1);
+                double mark=scannr.nextDouble();
+
+                if(mark<0||mark>100){
+                    System.out.println("Invalid marks! The marks should be between 0 and 100");
+                    return;
+                }
+                marks.add(mark);
+            }
+
+            ResultSummary result = calculatedGrades(marks);
+
+            System.out.println("\nHere are the Results:");
+            System.out.printf("Total Possible Marks: %d%n", numSubjects * 100);
+            System.out.printf("Total Marks Scored: %.2f%d%n",result.totalMarks,numSubjects*100);
+            System.out.printf("Average Percentage: %.2f%%%n",result.averagePercentage);
+            System.out.printf("Grade:%c%n",result.grade);
+            scannr.close();
+        }
+    }
+}
