@@ -1,0 +1,141 @@
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+
+class Question {
+    private String text;
+    private List<String> options;
+    private int correctAnswer, timeLimit;
+    public Question(String text, List<String> options, int correctAnswer, int timeLimit) {
+        this.text = text;
+        this.options = options;
+        this.correctAnswer = correctAnswer;
+        this.timeLimit = timeLimit;
+    }
+
+    public String getText() { return text; }
+    public List<String> getOptions() { return options; }
+    public int getCorrectAnswer() { return correctAnswer; }
+    public int getTimeLimit() { return timeLimit; }
+}
+
+public class QuizApplication extends JFrame {
+    private List<Question> questions = new ArrayList<>();
+    private int currentQuestionIndex = 0, score = 0, timeLeft;
+    private JLabel questionLabel = new JLabel(), timerLabel = new JLabel();
+    private List<JRadioButton> radioButtons = new ArrayList<>();
+    private ButtonGroup optionsGroup = new ButtonGroup();
+    private Timer timer;
+    public QuizApplication() {
+        setTitle("Tech World Quiz");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(600, 400);
+        setLayout(new BorderLayout(10, 10));
+        initializeQuestions();
+
+        JPanel questionPanel = new JPanel(new BorderLayout());
+        questionLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        questionPanel.add(questionLabel, BorderLayout.CENTER);
+        JPanel optionsPanel = new JPanel(new GridLayout(4, 1, 5, 5));
+        for (int i = 0; i < 4; i++) {
+            JRadioButton radioButton = new JRadioButton();
+            radioButtons.add(radioButton);
+            optionsGroup.add(radioButton);
+            optionsPanel.add(radioButton);
+        }
+
+        JPanel bottomPanel = new JPanel(new FlowLayout());
+        timerLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        JButton submitButton = new JButton("Submit");
+        submitButton.addActionListener(e -> submitAnswer());
+        bottomPanel.add(timerLabel);
+        bottomPanel.add(submitButton);
+
+        add(questionPanel, BorderLayout.NORTH);
+        add(optionsPanel, BorderLayout.CENTER);
+        add(bottomPanel, BorderLayout.SOUTH);
+        displayQuestion();
+    }
+
+    private void initializeQuestions() {
+        questions.add(new Question("Which company is known for its 10-minute grocery delivery service?",
+                List.of("Zepto", "Blinkit", "Swiggy", "Zomato"), 0, 30));
+        questions.add(new Question("Which company was formerly known as Grofers?",
+                List.of("Zomato", "Dunzo", "Blinkit", "Amazon Fresh"), 2, 30));
+        questions.add(new Question("Which company developed the GPT series of AI models?",
+                List.of("OpenAI", "Google", "DeepMind", "Anthropic"), 0, 30));
+        questions.add(new Question("Which company owns the fashion retail platform Myntra?",
+                List.of("Amazon", "Flipkart", "Myntra", "Snapdeal"), 1, 30));
+        questions.add(new Question("Which telecom company launched JioMart?",
+                List.of("Reliance Jio", "Airtel", "BSNL", "Vodafone Idea"), 0, 30));
+    }
+
+    private void displayQuestion() {
+        if (currentQuestionIndex < questions.size()) {
+            Question q = questions.get(currentQuestionIndex);
+            questionLabel.setText(q.getText());
+            for (int i = 0; i < radioButtons.size(); i++) {
+                radioButtons.get(i).setText(q.getOptions().get(i));
+                radioButtons.get(i).setSelected(false);
+            }
+            startTimer(q.getTimeLimit());
+        } else {
+            showFinalScore();
+        }
+    }
+
+    private void startTimer(int seconds) {
+        timeLeft = seconds;
+        timerLabel.setText("Time left: " + timeLeft + " seconds");
+        if (timer != null) timer.stop();
+
+        timer = new Timer(1000, e -> {
+            timeLeft--;
+            timerLabel.setText("Time left: " + timeLeft + " seconds");
+            if (timeLeft <= 0) {
+                timer.stop();
+                JOptionPane.showMessageDialog(this, "Time's up!");
+                moveToNextQuestion();
+            }
+        });
+        timer.start();
+    }
+
+    private void submitAnswer() {
+        if (timer != null) timer.stop();
+        int selectedAnswer = -1;
+
+        for (int i = 0; i < radioButtons.size(); i++) {
+            if (radioButtons.get(i).isSelected()) {
+                selectedAnswer = i;
+                break;
+            }
+        }
+
+        if (selectedAnswer == -1) {
+            JOptionPane.showMessageDialog(this, "Please select an answer before submitting.");
+            return;
+        }
+
+        if (selectedAnswer == questions.get(currentQuestionIndex).getCorrectAnswer()) score++;
+        moveToNextQuestion();
+    }
+
+    private void moveToNextQuestion() {
+        currentQuestionIndex++;
+        displayQuestion();
+    }
+
+    private void showFinalScore() {
+        JOptionPane.showMessageDialog(this, "Quiz completed!\nYour score: " + score + " out of " + questions.size());
+        System.exit(0);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            QuizApplication quiz = new QuizApplication();
+            quiz.setVisible(true);
+        });
+    }
+}
